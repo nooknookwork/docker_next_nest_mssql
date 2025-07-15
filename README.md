@@ -11,6 +11,7 @@ This project is a full-stack web application using:
 
 ## 📁 Project Structure
 
+```
 root/
 │
 ├── backend/ # NestJS app
@@ -24,7 +25,7 @@ root/
 │
 ├── docker-compose.yml # Docker Compose config
 └── README.md # You're here!
-
+```
 
 ---
 
