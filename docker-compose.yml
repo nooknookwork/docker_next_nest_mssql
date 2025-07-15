@@ -1,0 +1,50 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong!Passw0rd"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  backend:
+    platform: linux/amd64
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nestjs-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mssql
+    environment:
+      DB_HOST: mssql
+      DB_PORT: 1433
+      DB_USERNAME: sa
+      DB_PASSWORD: YourStrong!Passw0rd
+      DB_NAME: your_db_name
+    volumes:
+      - ./backend:/app/back_end
+    working_dir: /app/back_end
+    command: bash -c "./wait-for-mssql.sh"
+
+  frontend:
+    platform: linux/amd64
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nextjs-frontend
+    ports:
+      - "3009:3009"
+    volumes:
+      - ./frontend:/app/front_end
+      # - ./frontend/node_modules:/app/front_end/node_modules
+    working_dir: /app/front_end
+    command: pnpm run dev
+
+volumes:
+  mssql_data:
